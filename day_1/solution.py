@@ -12,7 +12,7 @@ def rotate_dial(start: int, rotation: str):
     result = start + distance
     if result < 0:
         return result + DIAL_MAX, number_of_zero_crossings + 1
-    if result > 99:
+    if result >= DIAL_MAX:
         return result - DIAL_MAX, number_of_zero_crossings + 1
     return result, number_of_zero_crossings
 
