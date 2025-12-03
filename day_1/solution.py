@@ -2,33 +2,41 @@ DIAL_MAX = 100
 
 
 def rotate_dial(start: int, rotation: str):
-    number_of_zero_crossings = 0
+    # *sigh* hitting too many edge cases, ai to the rescue. was only 3 off too
+    # but i had already done several submissions
     direction, distance = rotation[0], int(rotation[1:])
-    if distance > DIAL_MAX:
-        number_of_zero_crossings += distance // DIAL_MAX
-        distance = distance % DIAL_MAX
-    if direction == "L":
-        distance *= -1
-    result = start + distance
-    if result < 0:
-        result += DIAL_MAX
-        return result, number_of_zero_crossings + (1 if result != 0 else 0)
-    if result >= DIAL_MAX:
-        result -= DIAL_MAX
-        return result, number_of_zero_crossings + (1 if result != 0 else 0)
-    return result, number_of_zero_crossings
+
+    if direction == "R":
+        base = (-start) % DIAL_MAX
+        end = (start + distance) % DIAL_MAX
+    else:
+        base = start % DIAL_MAX
+        end = (start - distance) % DIAL_MAX
+
+    if base == 0:
+        first = DIAL_MAX
+    else:
+        first = base
+
+    if first > distance:
+        zero_hits = 0
+    else:
+        zero_hits = 1 + (distance - first) // DIAL_MAX
+
+    return end, zero_hits
 
 
 def count_times_dial_points_to_zero(starting_number: int, rotations: list[str]):
     current_number = starting_number
-    total_landing_on_zero = 0
-    total_number_of_zero_crossings = 0
+    total_zero_clicks = 0
+    total_zero_landings = 0
     for rotation in rotations:
-        current_number, number_of_zero_crossings = rotate_dial(current_number, rotation)
+        current_number, zero_hits = rotate_dial(current_number, rotation)
+        total_zero_clicks += zero_hits
         if current_number == 0:
-            total_landing_on_zero += 1
-        total_number_of_zero_crossings += number_of_zero_crossings
-    return total_landing_on_zero, total_number_of_zero_crossings
+            total_zero_landings += 1
+
+    return total_zero_landings, total_zero_clicks
 
 
 if __name__ == "__main__":
